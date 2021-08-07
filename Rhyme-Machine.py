@@ -1,41 +1,73 @@
-def Decode(Rhymes_List,window):
+import PySimpleGUI as sg
+import json
+import requests
+
+
+funct = {
     
-    Rhymes_List = Rhymes_List.json()
-    Rhymes_List_Refined = []
-    for i in Rhymes_List:
-        Rhymes_List_Refined.append(i['word'])
-        #window['-OUTPUT-'].update(i['word'])
-    Rhymes_List = Rhymes_List_Refined
-    return Rhymes_List
-def Main():
+    'Rhymes':['Find words that rhyme with','-SEARCH-PARAMETER-','rel_rhy'],
+    'Related Words':['Find words related to','-SEARCH-PARAMETER-','ml'],
+    'Similar Sound' : ['Find words that sound similar to','-SEARCH-PARAMETER-','sl'],
+    'Similar Spelling' : ['Find words with a similar spelling as', '-SEARCH-PARAMETER-','sp'],
+    'Synonyms' : ['Find synonyms of', '-SEARCH-PARAMETER-','rel_syn'],
+    'Antonyms' : ['Find antonyms of', '-SEARCH-PARAMETER-','rel_ant']
+    }
+
+#def definitions():
+
+def windowdisplay():
     sg.theme('DarkAmber')
 
-    layout = [[sg.Text('Find words that rhyme with:'), sg.Text(size=(15,1))],
-          [sg.Input(key='-IN-')],
-          [sg.Text(''), sg.Text(size=(100,25), key='-OUTPUT-')],
+    layout = [[sg.Text('Please Choose a mode:'), sg.Text(size=(15,1))],
+          [sg.Button(item) for item in funct.keys()],
+          [sg.Text(size=(30,1), key='-SEARCH-PARAMETER-')],
+          [sg.Input(key='-WORD-')],
+          [sg.Text(''),sg.Text(size=(100,25), key='-OUTPUT-')],
           [sg.Button('Show'), sg.Button('Exit')]]
 
     window = sg.Window('Pattern 2B', layout)
+    return window, layout
 
-    while True:  # Event Loop
+#def Decode(Rhymes_List,window):
+#    
+#    Rhymes_List = Rhymes_List.json()
+#    Rhymes_List = [poop['word'] for poop in Rhymes_List]
+#    return Rhymes_List
+
+decode = lambda word_list : [i['word'] for i in word_list.json()]
+
+
+
+def main():
+    
+    window, layout = windowdisplay()
+    opened = True
+    mode = funct['Rhymes'][2]
+    
+    while opened:  # Event Loop
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
-            break
-        if event == 'Show':
-            # Grabbing the input from the user
-            word_entered=(values['-IN-'])
-            #Get rhyme data list from Datamuse
-            Rhymes_List = requests.get(f'https://api.datamuse.com/words?rel_rhy={word_entered}&max=100')                            
-            #send the list to remove unnecessary data
-            Rhymes_List = Decode(Rhymes_List, window)
-            
-            window['-OUTPUT-'].update(Rhymes_List)
-
         
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            opened = False
+
+        elif event == 'Show':
+            # Grabbing the input from the user
+            word_entered=(values['-WORD-'])
+            #Get rhyme data list from Datamuse
+            word_list = requests.get(f'https://api.datamuse.com/words?{mode}={word_entered}&max=100')
+            
+            #send the list to remove unnecessary data
+            word_list = decode(word_list)
+            
+            window['-OUTPUT-'].update([item for item in word_list])
+
+        else:
+            window[funct[event][1]].update(funct[event][0])
+            mode = funct[event][2]
 
     window.close()
-    
+main()    
 #####Notes#####
     ###Short Term###
     #-strip function for that obnoxious string from datamuse OR find a way to get shorter strings from the original query list
@@ -50,4 +82,3 @@ def Main():
     #-
     ###---------###
 #####-----#####
-Main()
