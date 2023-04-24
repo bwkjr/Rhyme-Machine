@@ -31,7 +31,7 @@ def windowdisplay():
 #def Decode(Rhymes_List,window):
 #    
 #    Rhymes_List = Rhymes_List.json()
-#    Rhymes_List = [poop['word'] for poop in Rhymes_List]
+#    Rhymes_List = [word['word'] for word in Rhymes_List]
 #    return Rhymes_List
 
 decode = lambda word_list : [i['word'] for i in word_list.json()]
@@ -68,17 +68,4 @@ def main():
 
     window.close()
 main()    
-#####Notes#####
-    ###Short Term###
-    #-strip function for that obnoxious string from datamuse OR find a way to get shorter strings from the original query list
-    #-fix text size for that string(probably not permanent...need to make edits to the GUI Window
-    #-create menu so that user can choose what list they want the tool to generate (rhymes,near rhymes, synonyms, etc.)
-    ###----------###
-    ###Long Term###
-    #- 
-    #- Add a "save words for later" feature so users can come back to words/ phrases that they like
-    #- Add a "you've rhymed these words before" feature/analytic 
-    #- Add a "your favorite words/most used words" feature/analytic
-    #-
-    ###---------###
-#####-----#####
+
